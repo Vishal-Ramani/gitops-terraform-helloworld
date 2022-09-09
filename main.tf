@@ -1,11 +1,29 @@
 locals {
-  name          = "my-module"
+  name          = "helm-helloworld"
   bin_dir       = module.setup_clis.bin_dir
   yaml_dir      = "${path.cwd}/.tmp/${local.name}/chart/${local.name}"
   service_url   = "http://${local.name}.${var.namespace}"
+  cluster_type = var.cluster_type == "kubernetes" ? "kubernetes" : "openshift"
   values_content = {
+    helm_guestbook = {
+      "replicaCount": 1
+      "image.repository" = "docker.io/bitnami/git"
+      "image.tag" = "2.37.3-debian-11-r2"
+      "image.pullPolicy" = "IfNotPresent"
+      "service.type" = "ClusterIP"
+      "service.port" = "80"
+      "ingress.enabled" = "false"
+      "ingress.annotations" = ""
+      "ingress.path" = "/"
+      "ingress.hosts" = ["chart-example.local"]
+      "ingress.tls" = []
+      "resources" = ""
+      "nodeSelector" = ""
+      "tolerations" = ""
+      "affinity" = ""
+    }
   }
-  layer = "services"
+  layer = "applications"
   type  = "base"
   application_branch = "main"
   namespace = var.namespace
